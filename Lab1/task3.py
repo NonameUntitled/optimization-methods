@@ -86,4 +86,3 @@ if __name__ == '__main__':
         plt.title(f'K = {1 / eigenvalues_diff} N = {2}. Arguments history')
         plt.grid()
         plt.show()
-
