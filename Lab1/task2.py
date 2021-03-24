@@ -39,12 +39,13 @@ def gradient_descend(
         function: Callable[[float], float],
         function_diff: Callable[[float], float],
         learning_rate: float,
+        start_arg: float,
         eps: float = 1e-8,
         debug: bool = False
 ) -> Tuple[int, float, float, List[float], List[float]]:
     step_count = 0
     pred_x = None
-    arg_min = np.random.random(1)[0]
+    arg_min = start_arg
     arg_history = [arg_min]
     target_history = [function(arg_min)]
 
@@ -82,7 +83,7 @@ def methods_comparison(
     linear_step_count, linear_arg_min, linear_min_target, linear_arg_history, linear_target_history = \
         linear_search(function, left_arg, right_arg, step_size)
     grad_step_count, grad_arg_min, grad_min_target, grad_arg_history, grad_target_history = \
-        gradient_descend(function, function_grad, learning_rate)
+        gradient_descend(function, function_grad, learning_rate, left_arg)
     print(title)
     print(f'Step count. Linear: {linear_step_count}. Gradient: {grad_step_count}')
     print(f'Arg min. Linear: {linear_arg_min}. Gradient: {grad_arg_min}')
@@ -108,11 +109,11 @@ def find_optimal_steps(
         right_lr: float,
         left_step_size: float,
         right_step_size: float,
-        left_linear_arg: float = -100,
-        right_linear_arg: float = 100
+        left_arg: float = -100,
+        right_arg: float = 100
 ):
-    grad_target_fun = lambda x: gradient_descend(function, function_grad, x)[0]
-    linear_target_fun = lambda x: linear_search(function, left_linear_arg, right_linear_arg, x)[2]
+    grad_target_fun = lambda x: gradient_descend(function, function_grad, x, left_arg)[0]
+    linear_target_fun = lambda x: linear_search(function, left_arg, right_arg, x)[2]
 
     _, _, optimal_learning_rate, _, _ = \
         golden_slice(grad_target_fun, left_lr, right_lr)
@@ -125,18 +126,20 @@ def find_optimal_steps(
 
     methods_comparison(
         function, function_grad, 'Random',
-        left_arg=left_linear_arg,
-        right_arg=right_linear_arg,
+        left_arg=left_arg,
+        right_arg=right_arg,
         step_size=random_step_size,
-        learning_rate=random_learning_rate
+        learning_rate=random_learning_rate,
+        create_plot=True
     )
 
     methods_comparison(
         function, function_grad, 'Optimal',
-        left_arg=left_linear_arg,
-        right_arg=right_linear_arg,
+        left_arg=left_arg,
+        right_arg=right_arg,
         step_size=optimal_step_size,
-        learning_rate=optimal_learning_rate
+        learning_rate=optimal_learning_rate,
+        create_plot=True
     )
 
 
