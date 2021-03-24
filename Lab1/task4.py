@@ -1,5 +1,6 @@
 from task3 import gradient_descent, compute_func, compute_grad
 
+import copy
 import numpy as np
 
 
@@ -19,8 +20,8 @@ if __name__ == '__main__':
     step_count, _, _, _, _ = gradient_descent(
         lambda x: compute_func(matrix_1, b_1, c, x),
         lambda x: compute_grad(matrix_1, b_1, c, x),
-        x_1,
-        learning_rate=0.03
+        copy.deepcopy(x_1),
+        learning_rate=0.5
     )
     print(f'K = 1, N = 1, Step count: {step_count}')
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     step_count, _, _, _, _ = gradient_descent(
         lambda x: compute_func(matrix_2, b_2, c, x),
         lambda x: compute_grad(matrix_2, b_2, c, x),
-        x_2,
+        copy.deepcopy(x_2),
         learning_rate=0.03
     )
     print(f'K = 1, N = 2, Step count: {step_count}')
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     step_count, _, _, _, _ = gradient_descent(
         lambda x: compute_func(matrix_3, b_3, c, x),
         lambda x: compute_grad(matrix_3, b_3, c, x),
-        x_3,
+        copy.deepcopy(x_3),
         learning_rate=0.03
     )
     print(f'K = 1, N = 3, Step count: {step_count}')
@@ -48,7 +49,7 @@ if __name__ == '__main__':
         lambda x: compute_func(matrix_1, b_1, c, x),
         lambda x: compute_grad(matrix_1, b_1, c, x),
         x_1,
-        learning_rate=0.03
+        learning_rate=0.5
     )
     print(f'K = 0.5, N = 1, Step count: {step_count}')
 
@@ -66,7 +67,7 @@ if __name__ == '__main__':
         lambda x: compute_func(matrix_3, b_3, c, x),
         lambda x: compute_grad(matrix_3, b_3, c, x),
         x_3,
-        learning_rate=0.0008
+        learning_rate=0.03
     )
     print(f'K = 0.5, N = 3, Step count: {step_count}')
 
@@ -76,7 +77,7 @@ if __name__ == '__main__':
         lambda x: compute_func(matrix_1, b_1, c, x),
         lambda x: compute_grad(matrix_1, b_1, c, x),
         x_1,
-        learning_rate=0.03
+        learning_rate=0.5
     )
     print(f'K = 0.32, N = 1, Step count: {step_count}')
 
@@ -94,7 +95,7 @@ if __name__ == '__main__':
         lambda x: compute_func(matrix_3, b_3, c, x),
         lambda x: compute_grad(matrix_3, b_3, c, x),
         x_3,
-        learning_rate=0.0008
+        learning_rate=0.03
     )
     print(f'K = 0.32, N = 3, Step count: {step_count}')
 

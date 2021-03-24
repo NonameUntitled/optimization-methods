@@ -1,6 +1,9 @@
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Callable, Tuple, List
+
+from task1 import dichotomy, golden_slice, fibonacci
 
 
 def linear_search(
@@ -46,6 +49,10 @@ def gradient_descend(
     target_history = [function(arg_min)]
 
     while pred_x is None or abs(pred_x - arg_min) > eps:
+        if step_count > 1e4 or target_history[-1] > 1e12:
+            return_value = 1e8 + learning_rate * 10
+            return int(return_value), return_value, return_value, [], []  # Hack to suppress big lr values
+
         grad = function_diff(arg_min)
         pred_x = arg_min
         arg_min -= learning_rate * function_diff(arg_min)
@@ -70,7 +77,7 @@ def methods_comparison(
         right_arg: float,
         step_size: float = 1,
         learning_rate: float = 1e-4,
-        eps: float = 1e-8,
+        create_plot: bool = False
 ):
     linear_step_count, linear_arg_min, linear_min_target, linear_arg_history, linear_target_history = \
         linear_search(function, left_arg, right_arg, step_size)
@@ -80,16 +87,57 @@ def methods_comparison(
     print(f'Step count. Linear: {linear_step_count}. Gradient: {grad_step_count}')
     print(f'Arg min. Linear: {linear_arg_min}. Gradient: {grad_arg_min}')
     print(f'Min target. Linear: {linear_min_target}. Gradient: {grad_min_target}')
-    xs = np.linspace(left_arg, right_arg, 1000)
-    ys = np.array(list(map(function, xs)))
-    plt.plot(xs, ys, c='r', label='Function')
-    plt.plot(grad_arg_history, grad_target_history, label='Gradient', c='orange')
-    plt.scatter(grad_arg_history, grad_target_history, c='orange')
-    plt.plot(linear_arg_history, linear_target_history, label='Linear', c='b')
-    plt.scatter(linear_arg_history, linear_target_history, c='b')
-    plt.title(title)
-    plt.legend()
-    plt.show()
+
+    if create_plot:
+        xs = np.linspace(left_arg, right_arg, 1000)
+        ys = np.array(list(map(function, xs)))
+        plt.plot(xs, ys, c='r', label='Function')
+        plt.plot(grad_arg_history, grad_target_history, label='Gradient', c='orange')
+        plt.scatter(grad_arg_history, grad_target_history, c='orange')
+        plt.plot(linear_arg_history, linear_target_history, label='Linear', c='b')
+        plt.scatter(linear_arg_history, linear_target_history, c='b')
+        plt.title(title)
+        plt.legend()
+        plt.show()
+
+
+def find_optimal_steps(
+        function: Callable[[float], float],
+        function_grad: Callable[[float], float],
+        left_lr: float,
+        right_lr: float,
+        left_step_size: float,
+        right_step_size: float,
+        left_linear_arg: float = -100,
+        right_linear_arg: float = 100
+):
+    grad_target_fun = lambda x: gradient_descend(function, function_grad, x)[0]
+    linear_target_fun = lambda x: linear_search(function, left_linear_arg, right_linear_arg, x)[2]
+
+    _, _, optimal_learning_rate, _, _ = \
+        golden_slice(grad_target_fun, left_lr, right_lr)
+
+    _, _, optimal_step_size, _, _ = \
+        golden_slice(linear_target_fun, left_step_size, right_step_size)
+
+    random_learning_rate = random.random() * (right_lr - left_lr) + left_lr
+    random_step_size = random.random() * (right_step_size - left_step_size) + left_step_size
+
+    methods_comparison(
+        function, function_grad, 'Random',
+        left_arg=left_linear_arg,
+        right_arg=right_linear_arg,
+        step_size=random_step_size,
+        learning_rate=random_learning_rate
+    )
+
+    methods_comparison(
+        function, function_grad, 'Optimal',
+        left_arg=left_linear_arg,
+        right_arg=right_linear_arg,
+        step_size=optimal_step_size,
+        learning_rate=optimal_learning_rate
+    )
 
 
 if __name__ == '__main__':
@@ -97,40 +145,31 @@ if __name__ == '__main__':
     fst_function = lambda x: x ** 2 + 10 * x
     fst_function_grad = lambda x: 2 * x + 10
 
-    methods_comparison(
-        fst_function,
-        fst_function_grad,
-        'First function',
-        left_arg=-40,
-        right_arg=10,
-        step_size=1,
-        learning_rate=0.003
+    find_optimal_steps(
+        fst_function, fst_function_grad,
+        1e-2, 1,
+        1e-2, 40,
+        -40, 40
     )
 
     # Second function
     snd_function = lambda x: x ** 2 + 20 * x + 12
     snd_function_grad = lambda x: 2 * x + 20
 
-    methods_comparison(
-        snd_function,
-        snd_function_grad,
-        'Second function',
-        left_arg=-40,
-        right_arg=10,
-        step_size=1,
-        learning_rate=0.003
+    find_optimal_steps(
+        snd_function, snd_function_grad,
+        1e-2, 1,
+        1e-2, 40,
+        -40, 40
     )
 
     # Last function
     last_function = lambda x: x ** 2
     last_function_grad = lambda x: 2 * x
 
-    methods_comparison(
-        snd_function,
-        snd_function_grad,
-        'Last function',
-        left_arg=-40,
-        right_arg=10,
-        step_size=1,
-        learning_rate=0.003
+    find_optimal_steps(
+        last_function, last_function_grad,
+        1e-2, 1,
+        1e-2, 40,
+        -40, 40
     )

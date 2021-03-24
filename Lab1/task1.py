@@ -127,7 +127,7 @@ def golden_slice(
     return step_count, function_calls, min_arg, min_target, distances_info
 
 
-def fibonacci_method(
+def fibonacci(
         function: Callable[[float], float],
         left_arg: float,
         right_arg: float,
@@ -137,9 +137,9 @@ def fibonacci_method(
 ) -> Tuple[int, int, float, float, List[float]]:
     fib_storage = {0: 0, 1: 1}
 
-    def fibonacci(n):
+    def fibonacci_helper(n):
         if n not in fib_storage:
-            fib_storage[n] = fibonacci(n - 1) + fibonacci(n - 2)
+            fib_storage[n] = fibonacci_helper(n - 1) + fibonacci_helper(n - 2)
         return fib_storage[n]
 
     step_count = 0
@@ -154,11 +154,11 @@ def fibonacci_method(
 
     if n is None:
         n = 2
-        while fibonacci(n) < (right_arg - left_arg) / eps:
+        while fibonacci_helper(n) < (right_arg - left_arg) / eps:
             n += 1
 
-    x1 = left_arg + fibonacci(n - 2) / fibonacci(n) * distance
-    x2 = left_arg + fibonacci(n - 1) / fibonacci(n) * distance
+    x1 = left_arg + fibonacci_helper(n - 2) / fibonacci_helper(n) * distance
+    x2 = left_arg + fibonacci_helper(n - 1) / fibonacci_helper(n) * distance
     f1 = function_with_counter(x1)
     f2 = function_with_counter(x2)
     k = 1
@@ -172,13 +172,13 @@ def fibonacci_method(
             left_arg = x1
             x1 = x2
             f1 = f2
-            x2 = left_arg + fibonacci(n - k - 1) / fibonacci(n - k) * (right_arg - left_arg)
+            x2 = left_arg + fibonacci_helper(n - k - 1) / fibonacci_helper(n - k) * (right_arg - left_arg)
             f2 = function_with_counter(x2)
         else:
             right_arg = x2
             x2 = x1
             f2 = f1
-            x1 = left_arg + fibonacci(n - k - 2) / fibonacci(n - k) * (right_arg - left_arg)
+            x1 = left_arg + fibonacci_helper(n - k - 2) / fibonacci_helper(n - k) * (right_arg - left_arg)
             f1 = function_with_counter(x1)
 
         k += 1
@@ -208,14 +208,16 @@ def fibonacci_method(
 
 
 if __name__ == '__main__':
+    some_function = lambda x: 3 * x ** 2 + 17 * x + 4
+
     dih_step_count, dih_function_call_count, dih_min_arg, dih_min_target, dih_distances_info = \
-        dichotomy(lambda x: 3 * x ** 2 + 17 * x + 4, -5, 10)
+        dichotomy(some_function, -5, 10)
 
     gold_step_count, gold_function_call_count, gold_min_arg, gold_min_target, gold_distances_info = \
-        golden_slice(lambda x: 3 * x ** 2 + 17 * x + 4, -5, 10)
+        golden_slice(some_function, -5, 10)
 
     fib_step_count, fib_function_call_count, fib_min_arg, fib_min_target, fib_distances_info = \
-        fibonacci_method(lambda x: 3 * x ** 2 + 17 * x + 4, -5, 10)
+        fibonacci(some_function, -5, 10, n=3)
 
     print(f'Steps. '
           f'Dih: {dih_step_count}. '
