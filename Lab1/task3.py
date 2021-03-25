@@ -2,6 +2,8 @@ import copy
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Callable, Tuple, List
+from math import sqrt
+import decimal
 
 
 def generate_q_matrix(eigenvalues_diff: float) -> np.ndarray:
@@ -28,6 +30,18 @@ def print_function_view(q_matrix: np.ndarray, b_vector: np.ndarray, c_value: flo
           f'({round(b_vector[1], 3)} * y) + '
           f'({round(c_value[0], 3)})'
           )
+
+
+def calc_level(
+        q_matrix: np.ndarray, b_vector: np.ndarray, c_value: float, z_val: float, x_val: float
+) -> (float, float):
+    d = q_matrix[0, 0] * x_val * x_val + b_vector[0] * x_val + c_value - z_val
+    y_coeff = sqrt(q_matrix[1, 1])
+    b_coeff = (q_matrix[0, 1] * x_val + q_matrix[1, 0] * x_val + b_vector[1]) / (y_coeff * 2)
+    free_coeff = b_coeff ** 2 - d
+    if free_coeff < 0:
+        return None, None
+    return (sqrt(free_coeff) - b_coeff) / y_coeff, (-sqrt(free_coeff) - b_coeff) / y_coeff
 
 
 def gradient_descent(
@@ -81,8 +95,22 @@ if __name__ == '__main__':
         args_history_x = list(map(lambda pnt: pnt[0], args_history))
         args_history_y = list(map(lambda pnt: pnt[1], args_history))
 
-        plt.plot(args_history_x, args_history_y)
-        plt.scatter(args_history_x, args_history_y)
+        x_arr = list()
+        y_arr = list()
+        for i in range(len(args_history_x)):
+            z = compute_func(q_matrix, b_vector, c_value, np.array([args_history_x[i], args_history_y[i]]))
+            for x_val in range(-1000, 1000):
+                xx = x_val / 100
+                (y1, y2) = calc_level(q_matrix, b_vector, c_value, z, xx)
+                if y1 is not None:
+                    x_arr.append(xx)
+                    y_arr.append(y1)
+                    x_arr.append(xx)
+                    y_arr.append(y2)
+        plt.scatter(x_arr, y_arr, s=[0.01 for _ in range(len(x_arr))])
+
+        plt.plot(args_history_x, args_history_y, color='orange')
+        plt.scatter(args_history_x, args_history_y, color='orange')
         plt.title(f'K = {1 / eigenvalues_diff} N = {2}. Arguments history')
         plt.grid()
         plt.show()
