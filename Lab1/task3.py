@@ -48,7 +48,7 @@ def gradient_descent(
         function: Callable[[np.ndarray], float],
         function_grad: Callable[[np.ndarray], np.ndarray],
         x: np.ndarray,
-        learning_rate: float = 1e-3,
+        learning_rate: float = 1e-4,
         eps: float = 1e-5,
 ) -> Tuple[int, np.ndarray, float, List[np.ndarray], List[float]]:
     step_count = 0
