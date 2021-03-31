@@ -1,5 +1,6 @@
 import numpy as np
 from typing import Callable, List
+from math import exp
 
 from task1 import advanced_gradient_descent, newton_method
 
@@ -70,6 +71,7 @@ if __name__ == '__main__':
     fst_function_grad = lambda x: np.array([-200 * x[1] + 202 * x[0] - 2, 200 * x[1] - 200 * x[0]], dtype=np.float64)
     fst_function_hessian = lambda x: np.array([[202, -200], [-200, 200]], dtype=np.float64)
 
+    print("======FIRST======")
     compare_convergence_process(
         fst_function,
         fst_function_grad,
@@ -90,6 +92,7 @@ if __name__ == '__main__':
         ], dtype=np.float64
     )
 
+    print("======SECOND======")
     compare_convergence_process(
         snd_function,
         snd_function_grad,
@@ -98,5 +101,41 @@ if __name__ == '__main__':
     )
 
     # Third function
-    # TODO write maximization
+    thd_function = lambda x: 2 * exp(-(((x[0] - 1) / 2) ** 2) - ((x[1] - 1) / 1) ** 2) \
+                             + 3 * exp(-(((x[0] - 2) / 3) ** 2) - ((x[1] - 3) / 2) ** 2)
+    thd_function_grad = lambda x: np.array(
+        [
+            -(2/3) * (x[0] - 2) * exp(-(1/9) * (x[0] - 2) ** 2 - (1/4) * (x[1] - 3) ** 2) \
+            - (x[0] - 1) * exp(-(1/4) * (x[0] - 1) ** 2 - (x[1] - 1) ** 2),
+            -(3 / 2) * (x[1] - 3) * exp(-(1 / 9) * (x[0] - 2) ** 2 - (1 / 4) * (x[1] - 3) ** 2) \
+            - 4 * (x[1] - 1) * exp(-(1/4) * (x[0] - 1) ** 2 - (x[1] - 1) ** 2)
+        ],
+        dtype=np.float64
+    )
+
+    thd_function_hessian = lambda x: np.array(
+        [
+            [
+                ((4/27) * (x[0] - 2) ** 2 - (2/3)) * exp(- (1/9) * (x[0] - 2) ** 2 - (1/4) * (x[1] - 3) ** 2) \
+                + (- 1 + (1/2) * (x[0] - 1) ** 2) * exp(-(1/4) * (x[0] - 1) ** 2 - (x[1] - 1) ** 2),
+                (1/3) * (x[0] - 2) * (x[1] - 3) * exp(- (1/9) * (x[0] - 2) ** 2 - (1/4) * (x[1] - 3) ** 2) \
+                + 2 * (x[0] - 1) * (x[1] - 1) * exp(-(1/4) * (x[0] - 1) ** 2 - (x[1] - 1) ** 2)
+            ],
+            [
+                (1 / 3) * (x[0] - 2) * (x[1] - 3) * exp(- (1 / 9) * (x[0] - 2) ** 2 - (1 / 4) * (x[1] - 3) ** 2) \
+                + 2 * (x[0] - 1) * (x[1] - 1) * exp(-(1 / 4) * (x[0] - 1) ** 2 - (x[1] - 1) ** 2),
+                ((3/4) * (x[1] - 3) ** 2 - (3/2)) * exp(- (1 / 9) * (x[0] - 2) ** 2 - (1 / 4) * (x[1] - 3) ** 2) \
+                + (-4 + 8 * (x[1] - 1) ** 2) * exp(-(1/4) * (x[0] - 1) ** 2 - (x[1] - 1) ** 2)
+            ]
+        ],
+        dtype=np.float64
+    )
+
+    print("======THIRD======")
+    compare_convergence_process(
+        thd_function,
+        thd_function_grad,
+        thd_function_hessian,
+        start_xs
+    )
 
