@@ -109,6 +109,7 @@ def newton_method(
     function_grad_calls_count = 0
     function_hessian_calls_count = 0
     start_time = time.time()
+    args_history = [copy.deepcopy(start_x)]
 
     def function_with_counter(x: np.ndarray) -> float:
         nonlocal function_calls_count
@@ -142,6 +143,7 @@ def newton_method(
 
         step_count += 1
         curr_x = curr_x - inv_hessian @ grad
+        args_history.append(curr_x)
 
     algorithm_converge_time = time.time() - start_time
     min_arg = curr_x
@@ -154,7 +156,8 @@ def newton_method(
         function_hessian_calls_count, \
         min_arg, \
         min_target, \
-        algorithm_converge_time
+        algorithm_converge_time, \
+        args_history
 
 
 if __name__ == '__main__':

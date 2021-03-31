@@ -2,6 +2,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Callable, Tuple, List
+from math import exp
 
 from task1 import dichotomy, golden_slice, fibonacci
 
@@ -121,8 +122,17 @@ def find_optimal_steps(
     _, _, optimal_step_size, _, _ = \
         golden_slice(linear_target_fun, left_step_size, right_step_size)
 
+    _, _, optimal_learning_rate_2, _, _ = \
+        dichotomy(grad_target_fun, left_lr, right_lr)
+
+    _, _, optimal_step_size_2, _, _ = \
+        dichotomy(linear_target_fun, left_step_size, right_step_size)
+
     random_learning_rate = random.random() * (right_lr - left_lr) + left_lr
     random_step_size = random.random() * (right_step_size - left_step_size) + left_step_size
+    print(f"golden size {optimal_step_size} : rate {optimal_learning_rate}")
+    print(f"dichotomy size {optimal_step_size_2} : rate {optimal_learning_rate_2}")
+    print(f"random size {random_step_size} : rate {random_learning_rate}")
 
     methods_comparison(
         function, function_grad, 'Random',
@@ -134,11 +144,20 @@ def find_optimal_steps(
     )
 
     methods_comparison(
-        function, function_grad, 'Optimal',
+        function, function_grad, 'Optimal golden',
         left_arg=left_arg,
         right_arg=right_arg,
         step_size=optimal_step_size,
         learning_rate=optimal_learning_rate,
+        create_plot=True
+    )
+
+    methods_comparison(
+        function, function_grad, 'Optimal dichotomy',
+        left_arg=left_arg,
+        right_arg=right_arg,
+        step_size=optimal_step_size,
+        learning_rate=optimal_learning_rate_2,
         create_plot=True
     )
 
@@ -176,3 +195,4 @@ if __name__ == '__main__':
         1e-2, 40,
         -40, 40
     )
+

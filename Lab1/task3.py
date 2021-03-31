@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from typing import Callable, Tuple, List
 from math import sqrt
 import decimal
+import time
 
 
 def generate_q_matrix(eigenvalues_diff: float) -> np.ndarray:
@@ -44,17 +45,35 @@ def calc_level(
     return (sqrt(free_coeff) - b_coeff) / y_coeff, (-sqrt(free_coeff) - b_coeff) / y_coeff
 
 
+def calc_all_levels(
+        x_p, y_p, left_v, right_v, q_v, b_v, c_v
+):
+    x_arr = list()
+    y_arr = list()
+    for i in range(len(x_p)):
+        z = compute_func(q_v, b_v, c_v, np.array([x_p[i], y_p[i]]))
+        for x_val in range(left_v * 100, right_v * 100):
+            xx = x_val / 100
+            (y1, y2) = calc_level(q_v, b_v, c_v, z, xx)
+            if y1 is not None:
+                x_arr.append(xx)
+                y_arr.append(y1)
+                x_arr.append(xx)
+                y_arr.append(y2)
+    return x_arr, y_arr
+
+
 def gradient_descent(
         function: Callable[[np.ndarray], float],
         function_grad: Callable[[np.ndarray], np.ndarray],
         x: np.ndarray,
         learning_rate: float = 1e-4,
         eps: float = 1e-5,
-) -> Tuple[int, np.ndarray, float, List[np.ndarray], List[float]]:
+):
     step_count = 0
     args_history = [copy.deepcopy(x)]
     function_history = [function(x)]
-
+    start_time = time.time()
     pred_x = None
 
     while pred_x is None or np.linalg.norm(pred_x - x) > eps:
@@ -66,8 +85,9 @@ def gradient_descent(
         args_history.append(copy.deepcopy(x))
         function_history.append(copy.deepcopy(function(x)))
 
-    return step_count, x, function(x), args_history, function_history
+    algorithm_converge_time = time.time() - start_time
 
+    return step_count, x, function(x), args_history, function_history, algorithm_converge_time
 
 if __name__ == '__main__':
 
