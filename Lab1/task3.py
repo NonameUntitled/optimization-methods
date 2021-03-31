@@ -97,7 +97,7 @@ if __name__ == '__main__':
         c_value = np.random.randn(1) * 10
         x_vector = np.random.randn(2) * 5
 
-        step_count, argmin, target_min, args_history, function_history = \
+        step_count, argmin, target_min, args_history, function_history, kk = \
             gradient_descent(
                 lambda x: compute_func(q_matrix, b_vector, c_value, x),
                 lambda x: compute_grad(q_matrix, b_vector, c_value, x),
