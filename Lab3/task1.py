@@ -101,23 +101,14 @@ def simplex_method(Z: [float], constraints: [Constraint], feasible_origin: [floa
             for k in range(len(constraints[j].a)):
                 constraints[j].a[k] -= d * constraints[i].a[k]
             constraints[j].b -= d * constraints[i].b
-            if constraints[j].b < 0:
-                constraints[j].negate()
         constraints.sort(reverse=True, key=lambda c: [c.a[i] for i in basis])
         i += 1
-
-    for constraint in constraints:
-        for r in [constraint.a[i] for i in basis]:
-            if r < 0:
-                raise ValueError("Недопустимая база")
 
     # Шаг 2. Заполняем симплексную таблицу. Первый столбец: b. Последняя строка: -f
     simplex_table = []
     for constraint in constraints:
         simplex_table.append([constraint.b] + constraint.a)
     f = [0] * m
-    for i in range(len(Z)):
-        f[0] -= Z[i] * feasible_origin[i]
     for i in range(len(Z)):
         if i not in basis:
             f[i + 1] += Z[i]
@@ -130,6 +121,7 @@ def simplex_method(Z: [float], constraints: [Constraint], feasible_origin: [floa
                     if j == i:
                         continue
                     f[j + 1] -= a[j] * Z[i] / a[i]
+                f[0] -= constraint.b * Z[i] / a[i]
     simplex_table.append(f)
 
     # Пока существует положительная симплексная разность, пытаемся найти базис лучше
@@ -152,8 +144,8 @@ def simplex_method(Z: [float], constraints: [Constraint], feasible_origin: [floa
         for i in range(n):
             fraction = 1e10
             if simplex_table[i][lead_element_j] != 0:
-                fraction = simplex_table[i][0] / \
-                    simplex_table[i][lead_element_j]
+                fraction = simplex_table[i][0] / simplex_table[i][lead_element_j]
+
             if sign(simplex_table[i][0]) == sign(simplex_table[i][lead_element_j]) and fraction < min_fraction:
                 min_fraction = fraction
                 lead_element_i = i
@@ -377,7 +369,7 @@ tests = [
             Constraint([1, -1, 6, 1, 1], 12, 0)
         ],
         "feasible_origin": [1, 1, 2, 0, 0],
-        "error": "Недопустимая база"
+        "expected": 10.0
     },
     {
         "Z": [1, -4, 3, -10],
