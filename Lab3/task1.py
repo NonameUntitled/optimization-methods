@@ -263,7 +263,7 @@ def test(example):
     constraints = example["constraints"]
 
     # Опционально нам могут дать исходное базисное допустимое решение
-    # Если его не дали в задаче - не страшно, найдем его с помощью метода искусственных переменных
+    # Если его не дали в задаче - не страшно, найдем его с помощью метода искусственного базиса
     feasible_origin = example["feasible_origin"]
 
     try:
@@ -398,6 +398,24 @@ tests = [
         ],
         "feasible_origin": None,
         "expected": -10.0
+    },
+    {
+        "Z": [-1, -1, 2, 3],
+        "constraints": [
+            Constraint([2, -1, 1, 0], 1, 0),
+            Constraint([-1, 2, 0, 1], 1, 0)
+        ],
+        "feasible_origin": None,
+        "expected": 5.0
+    },
+    {
+        "Z": [-1, -1, 2, 3],
+        "constraints": [
+            Constraint([2, -1, 1, 0], 1, 0),
+            Constraint([-1, 2, 0, 1], 1, 0)
+        ],
+        "feasible_origin": [0, 0, 1, 1],
+        "expected": 5.0
     }
 ]
 
