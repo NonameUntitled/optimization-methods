@@ -10,8 +10,8 @@
 
 6)  * `x1`: (1, 0, 0, 0)
     * `x3`: (0, 0, 1, 0)
-    * `x1, x3`: (i, 0, j, 0), `forall` i, j: i + j = 1
-    * `x1, x2, x3, x4`: (i, a, j, b): `forall` i, j: i + j = 1; `forall` a, b: a + b = 0
+    * `x1, x3`: (i, 0, j, 0), $\forall i, j: i + j = 1$
+    * `x1, x2, x3, x4`: (i, a, j, b): $\forall i, j: i + j = 1$; $\forall a, b: a + b = 0$
 
 7) x1 = (11 - 9x3) / 7; x2 = (10 - 5x3) / 7
 
