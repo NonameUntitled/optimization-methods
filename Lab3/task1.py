@@ -161,10 +161,6 @@ def simplex_method(Z: [float], constraints: [Constraint], feasible_origin: [floa
             for j in range(m):
                 simplex_table[i][j] += d * simplex_table[lead_element_i][j]
 
-        point = [0] * len(feasible_origin)
-        for i in range(n):
-            point[basis[i]] = simplex_table[i][0]
-
         basis[lead_element_i] = lead_element_j - 1
 
     # Вектор (учитывая искусственные переменные), на котором функция оптимальна, ищем из симплексной таблицы на основе базиса
@@ -416,6 +412,15 @@ tests = [
         ],
         "feasible_origin": [0, 0, 1, 1],
         "expected": 5.0
+    },
+    {
+        "Z": [3, 2],
+        "constraints": [
+            Constraint([1, 2], 7, -1),
+            Constraint([2, 1], 8, -1)
+        ],
+        "feasible_origin": None,
+        "expected": 13.0
     }
 ]
 
